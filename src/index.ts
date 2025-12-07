@@ -1,23 +1,24 @@
-// import express from 'express';
+import express from 'express';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-// const app = express();
-// app.use(express.json());
+const app = express();
+app.use(express.json());
 
-// const port = 3000;
+const port = process.env.PORT || 8000;
 
+// const myFunc = (num: number): number => {
+//   return num * num;
+// };
 
-const myFunc = (num: number): number => {
-  return num * num;
-};
+//export default myFunc;
 
-export default myFunc;
+app.get( "/health", (req, res) => {
+        res.status(200).json({ status: "OK" });
+        });
 
-// app.get( "/api", (req, res) => {
-//         res.send("Main endpoint.")
-//         }); 
-
-// // start the Express server
-// app.listen(port, () => {
-//   console.log(`server started at http://localhost:${port}`);
-// });
+// start the Express server
+app.listen(port, () => {
+  console.log(`server started at http://localhost:${port}`);
+});
