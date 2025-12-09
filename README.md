@@ -2,14 +2,21 @@
 
 This small Express + TypeScript service resizes images on demand and caches thumbnails.
 
+**Quick start (after unzip)**
+
+```bash
+npm install
+PORT=8000 npm start     # or set PORT=3000 if you prefer
+```
+
 **Scripts**
 
-- **install:** Run dependencies: `npm install`
-- **start:** Starts the dev server with `nodemon` and `ts-node`: `npm run start` (default port `8000`, set `PORT` to override)
-- **build:** Compile TypeScript to `dist`: `npm run build` (`tsc`)
-- **test:** Build and run Jasmine specs: `npm run test`
-- **lint:** Run ESLint on source: `npm run lint`
-- **prettier:** Run Prettier: `npm run prettier`
+- **install:** `npm install`
+- **start:** `npm run start` (nodemon + ts-node; default port `8000`, override with `PORT`)
+- **build:** `npm run build` (tsc → `dist`)
+- **test:** `npm run test` (build then jasmine)
+- **lint:** `npm run lint`
+- **format:** `npm run format`
 
 **Endpoints**
 
@@ -68,17 +75,11 @@ ls -l src/cache/test_250x250.jpg
 
 **Notes for running the compiled build**
 
-- If you run the compiled code (`node dist/index.js`) after `npm run build`, the compiled app will look for static assets under `dist/images` and `dist/cache`. TypeScript does not copy static assets automatically, so either:
-  - Copy the images and (optional) cache directory into `dist` before running:
-
-```bash
-npm run build
-cp -R src/images dist/images
-mkdir -p dist/cache
-node dist/index.js
-```
-
-- Or run the app in dev mode with `npm run start` (nodemon + ts-node) which uses `src/images` and `src/cache` directly.
+- After `npm run build`, you can run the compiled server: `PORT=8000 node dist/index.js`
+- By default, the app still reads originals from `src/images` and writes cached files to `src/cache` (because it uses `process.cwd()`-based paths).
+- If you want to point elsewhere, set env vars:
+  - `IMAGES_DIR=/absolute/path/to/images`
+  - `CACHE_DIR=/absolute/path/to/cache`
 
 **Other functionality / implementation notes**
 

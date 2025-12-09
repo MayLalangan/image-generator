@@ -1,10 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 import { resizeImage, getCachedFilename } from '../utils/imageProcessor';
 
 describe('Image Processing Utility', () => {
-  const testImagePath = path.join(__dirname, '..', 'images', 'test.jpg');
-  const tempDir = path.join(__dirname, '..', 'cache', 'test-temp');
+  const projectRoot = process.cwd();
+  const testImagePath = path.join(projectRoot, 'src', 'images', 'test.jpg');
+  const tempDir = path.join(projectRoot, 'src', 'cache', 'test-temp');
   const outputPath = path.join(tempDir, 'output.jpg');
 
   beforeAll(() => {
@@ -30,6 +32,10 @@ describe('Image Processing Utility', () => {
       expect(fs.existsSync(outputPath)).toBeTrue();
       const stats = fs.statSync(outputPath);
       expect(stats.size).toBeGreaterThan(0);
+
+      const metadata = await sharp(outputPath).metadata();
+      expect(metadata.width).toBe(100);
+      expect(metadata.height).toBe(100);
     }, 15000);
 
     it('should throw error when input file does not exist', async () => {
@@ -67,6 +73,11 @@ describe('Image Processing Utility', () => {
     it('should handle different file extensions', () => {
       const result = getCachedFilename('image.png', 150, 150);
       expect(result).toBe('image_150x150.png');
+    });
+
+    it('should preserve names with multiple dots', () => {
+      const result = getCachedFilename('photo.version1.jpeg', 50, 60);
+      expect(result).toBe('photo.version1_50x60.jpeg');
     });
   });
 });
