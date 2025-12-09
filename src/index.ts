@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
-import sharp from 'sharp';
 import dotenv from 'dotenv';
+import { resizeImage, getCachedFilename } from './utils/imageProcessor';
 
 dotenv.config();
 
@@ -11,10 +11,11 @@ app.use(express.json());
 
 const port = Number(process.env.PORT) || 8000;
 
-// Use configurable directories; default to __dirname so compiled `dist` uses `dist/images` and `dist/cache`.
-// Allow overriding with IMAGES_DIR/CACHE_DIR (useful for pointing to `src/images` when running compiled code).
-const imagesDir = process.env.IMAGES_DIR || path.join(__dirname, 'images');
-const cacheDir = process.env.CACHE_DIR || path.join(__dirname, 'cache');
+// Use configurable directories so built app can point to src assets without copying
+const imagesDir =
+  process.env.IMAGES_DIR || path.join(process.cwd(), 'src', 'images');
+const cacheDir =
+  process.env.CACHE_DIR || path.join(process.cwd(), 'src', 'cache');
 
 if (!fs.existsSync(cacheDir)) {
   fs.mkdirSync(cacheDir, { recursive: true });
@@ -60,8 +61,7 @@ app.get('/resize', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Image file not found' });
     }
 
-    const parsed = path.parse(filename);
-    const cachedName = `${parsed.name}_${width}x${height}${parsed.ext}`;
+    const cachedName = getCachedFilename(filename, width, height);
     const cachedPath = path.join(cacheDir, cachedName);
 
     // If cached file exists
@@ -69,8 +69,8 @@ app.get('/resize', async (req: Request, res: Response) => {
       return res.sendFile(cachedPath);
     }
 
-    // Resize and cache
-    await sharp(inputPath).resize(width, height).toFile(cachedPath);
+    // Resize and cache using utility function
+    await resizeImage(inputPath, cachedPath, width, height);
 
     return res.sendFile(cachedPath);
   } catch (err) {

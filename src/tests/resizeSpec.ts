@@ -4,7 +4,7 @@ import path from 'path';
 import app from '../index';
 
 describe('GET /resize', () => {
-  const cacheDir = path.join(__dirname, '..', 'cache');
+  const cacheDir = path.join(process.cwd(), 'src', 'cache');
   const cachedPath = path.join(cacheDir, 'test_100x100.jpg');
 
   beforeAll(() => {
@@ -16,23 +16,11 @@ describe('GET /resize', () => {
     }
   });
 
-  // Ensure the original image is available to the compiled dist runtime
+  // Ensure the original image is available
   beforeAll(() => {
-    const srcImage = path.join(
-      __dirname,
-      '..',
-      '..',
-      'src',
-      'images',
-      'test.jpg'
-    );
-    const distImagesDir = path.join(__dirname, '..', 'images');
-    const distImage = path.join(distImagesDir, 'test.jpg');
-    if (!fs.existsSync(distImagesDir)) {
-      fs.mkdirSync(distImagesDir, { recursive: true });
-    }
-    if (!fs.existsSync(distImage) && fs.existsSync(srcImage)) {
-      fs.copyFileSync(srcImage, distImage);
+    const srcImage = path.join(process.cwd(), 'src', 'images', 'test.jpg');
+    if (!fs.existsSync(srcImage)) {
+      throw new Error('Test image not found: ' + srcImage);
     }
   });
 
