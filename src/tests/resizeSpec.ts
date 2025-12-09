@@ -18,7 +18,14 @@ describe('GET /resize', () => {
 
   // Ensure the original image is available to the compiled dist runtime
   beforeAll(() => {
-    const srcImage = path.join(__dirname, '..', '..', 'src', 'images', 'test.jpg');
+    const srcImage = path.join(
+      __dirname,
+      '..',
+      '..',
+      'src',
+      'images',
+      'test.jpg'
+    );
     const distImagesDir = path.join(__dirname, '..', 'images');
     const distImage = path.join(distImagesDir, 'test.jpg');
     if (!fs.existsSync(distImagesDir)) {
